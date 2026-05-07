@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "prisma generate && npx playwright install chromium --with-deps",
+    "build": "prisma generate",
     "start": "node server.js",
     "dev": "node --env-file=.env.local server.js",
     "db:migrate": "prisma migrate deploy",
