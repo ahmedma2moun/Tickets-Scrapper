@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "prisma generate",
+    "postinstall": "prisma generate",
     "dev": "vercel dev",
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate",
