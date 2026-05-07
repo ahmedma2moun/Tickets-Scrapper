@@ -1,0 +1,20 @@
+{
+  "name": "tazkarti-watcher",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "db:migrate": "prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
+  },
+  "devDependencies": {
+    "prisma": "^5.14.0"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "^123.0.0",
+    "@prisma/client": "^5.14.0",
+    "nodemailer": "^6.9.13",
+    "playwright-core": "^1.44.0"
+  }
+}

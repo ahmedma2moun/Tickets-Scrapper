@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model SeenMatch {
+  id          String   @id
+  homeTeam    String
+  awayTeam    String
+  matchDate   String
+  matchTime   String
+  competition String
+  ticketUrl   String
+  status      String   @default("")
+  seenAt      DateTime @default(now())
+
+  @@map("seen_matches")
+}
