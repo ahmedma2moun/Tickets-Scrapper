@@ -1,37 +1,37 @@
-import { scrapeMatches } from '../lib/watcher.js'
-import { sendNotification } from '../lib/notifier.js'
-import { isMatchSeen, saveMatch } from '../lib/db.js'
+import express from 'express'
+import { scrapeMatches } from './lib/watcher.js'
+import { sendNotification } from './lib/notifier.js'
+import { isMatchSeen, saveMatch } from './lib/db.js'
 
-export default async function handler(req, res) {
-  if (req.method !== 'GET') return res.status(405).end()
+const app = express()
+const PORT = process.env.PORT || 3000
 
+app.get('/api/check', async (req, res) => {
   if (req.headers['x-cron-secret'] !== process.env.CRON_SECRET) {
-    console.log('[check] Rejected request — invalid or missing x-cron-secret')
+    console.log('[check] Rejected — invalid or missing x-cron-secret')
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
   console.log(`[check] Request received — watching team: "${process.env.TEAM_NAME}"`)
 
   try {
-    console.log('[check] Starting scrape...')
     const newMatches = await scrapeMatches()
-    console.log(`[check] Scrape complete — ${newMatches.length} matching match(es) found`)
+    console.log(`[check] Scrape complete — ${newMatches.length} match(es) found`)
 
     const results = []
 
     for (const match of newMatches) {
-      console.log(`[check] Checking match: ${match.homeTeam} vs ${match.awayTeam} (id: ${match.id})`)
+      console.log(`[check] ${match.homeTeam} vs ${match.awayTeam}`)
 
       if (await isMatchSeen(match.id)) {
-        console.log(`[check]   → already seen, skipping`)
+        console.log(`[check]   → already seen`)
         results.push({ ...match, status: 'already_seen' })
         continue
       }
 
-      console.log(`[check]   → new match! saving and sending notification...`)
       await saveMatch({ ...match, seenAt: new Date().toISOString() })
       await sendNotification(match)
-      console.log(`[check]   → notification sent`)
+      console.log(`[check]   → notified`)
       results.push({ ...match, status: 'notified' })
     }
 
@@ -49,4 +49,8 @@ export default async function handler(req, res) {
     console.error('[check] Error:', err)
     res.status(500).json({ ok: false, error: err.message })
   }
-}
+})
+
+app.get('/health', (_req, res) => res.json({ ok: true }))
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
