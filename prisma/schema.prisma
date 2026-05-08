@@ -9,7 +9,8 @@ datasource db {
 }
 
 model SeenMatch {
-  id          String   @id
+  dbId        Int      @id @default(autoincrement())
+  matchId     String
   homeTeam    String
   awayTeam    String
   matchDate   String
@@ -19,5 +20,6 @@ model SeenMatch {
   status      String   @default("")
   seenAt      DateTime @default(now())
 
+  @@index([matchId])
   @@map("seen_matches")
 }
